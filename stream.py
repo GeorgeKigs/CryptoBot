@@ -21,6 +21,20 @@ def on_message(_, message):
     print(data)
 
 
+def on_agg_trd_msg(_, message):
+    json_data = json.loads(message)
+    data = {
+        "symbol": json_data["s"],
+        "time": json_data["T"],
+        "price": json_data["p"],
+        "quantity": json_data["q"],
+        "f_trade": json_data["f"],
+        "l_trade": json_data["l"],
+        "trader": json_data["a"]
+    }
+    print(data)
+
+
 def on_trd_msg(_, message):
     json_data = json.loads(message)
     data = {
@@ -58,4 +72,13 @@ def stream_trades():
     ws.run_forever()
 
 
-stream_trades()
+def stream_agg_trades():
+    conn = "wss://stream.binance.com:9443/ws/btcusdt@aggTrade"
+    ws = websocket.WebSocketApp(
+        conn, on_message=on_agg_trd_msg, on_open=on_open,
+        on_close=on_close
+    )
+    ws.run_forever()
+
+
+kindle_stick()

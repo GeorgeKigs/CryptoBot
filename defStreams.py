@@ -42,6 +42,7 @@ class AbstractStreamInter(metaclass=abc.ABCMeta):
         Returns:
             dict: Return a dict after Parsing the JSON data.
         """
+        print("new Message")
         return json.loads(message)
 
     @abc.abstractmethod
@@ -50,19 +51,21 @@ class AbstractStreamInter(metaclass=abc.ABCMeta):
         """
         pass
 
-    def run(self):
-        pass
+    def run(self, web_socket: websocket.WebSocketApp):
+        """Start streaming the data"""
+        try:
+            web_socket.run_forever()
+        except Exception as e:
+            self.close(web_socket)
 
-    def close(self):
-        pass
+    def close(self, web_socket: websocket.WebSocketApp):
+        """Close the webseocket"""
+        web_socket.close()
 
 
 class AggregateData(AbstractStreamInter):
     """Stream the aggregate data.
     Data is streamed in real-time.
-
-    Args:
-        AbstractStreamInter (_type_): _description_
     """
 
     def __init__(self, symbol, trade):
@@ -87,18 +90,22 @@ class AggregateData(AbstractStreamInter):
             on_close=self.on_close,
             on_message=self.on_message
         )
-        ws.run_forever()
+        super().run(ws)
+
+    def __repr__(self) -> str:
+        return f"Aggregate data {self.symbol}"
+
+    def __str__(self) -> str:
+        return f"Aggregate Data from {self.symbol}"
 
 
 class RawData(AbstractStreamInter):
     """Stream the aggregate data. 
     Data is sent in real-time.
-
-    Args:
-        AbstractStreamInter (_type_): _description_
     """
 
-    def __init__(self, symbol, trade):
+    def __init__(self, symbol):
+        trade = "Trade"
         self.conn = super().define_conn(symbol, trade)
 
     def on_message(self, _, message):
@@ -120,18 +127,24 @@ class RawData(AbstractStreamInter):
             on_close=self.on_close,
             on_message=self.on_message
         )
-        ws.run_forever()
+        super().run(ws)
+
+    def __repr__(self) -> str:
+        return f"Raw {self.symbol}"
+
+    def __str__(self) -> str:
+        return f"Streaming Binance Raw trading Data from {self.symbol}"
 
 
 class KindleData(AbstractStreamInter):
-    """Stream the Kindle data.Refreshes after 2000ms.
-
-    Args:
-        AbstractStreamInter (_type_): _description_
+    """Stream the Kindle data.
+    Refreshes after 2000ms.
     """
 
-    def __init__(self, symbol, trade):
-        self.conn = super().define_conn(symbol, trade)
+    def __init__(self, symbol):
+        self.symbol = symbol
+        trade = "kline_1m"
+        self.conn = super().define_conn(self.symbol, trade)
 
     def on_message(self, _, message):
         json_data = super().on_message(_, message)
@@ -154,7 +167,10 @@ class KindleData(AbstractStreamInter):
             on_close=self.on_close,
             on_message=self.on_message
         )
-        try:
-            ws.run_forever()
-        except KeyboardInterrupt:
-            ws.close()
+        super().run(ws)
+
+    def __repr__(self) -> str:
+        return f"Kindle Stick {self.symbol}"
+
+    def __str__(self) -> str:
+        return f"Streaming Binance Kindle Data from {self.symbol}"

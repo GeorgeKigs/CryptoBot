@@ -1,66 +1,8 @@
+from abstract import AbstractStreamInter
 import websocket
 import json
 
-import abc
-
-
-class AbstractStreamInter(metaclass=abc.ABCMeta):
-    """Abstract class that defines the data streams of the data.
-
-    """
-
-    def define_conn(self, symbol, Trade):
-        """Defines the connection.
-
-        Args:
-            symbol (str): What exchange we want to get
-            Trade (str): The type of data we want
-
-        Returns:
-            str: The connection String.
-        """
-        return f"wss://stream.binance.com:9443/ws/{symbol}@{Trade}"
-
-    def on_open(self, _):
-        """Defines what happens if the data stream is opened.
-        """
-        print("Session has been opened")
-
-    def on_close(self, _):
-        """Defines what happens if the data is closed.
-        """
-        print("Connection Closed")
-
-    @abc.abstractmethod
-    def on_message(self, _, message):
-        """Defines what happens when the data is recieved
-
-        Args:
-            _ : websocket connection    
-            message (JSON): JSON object that is recieved from the data stream
-
-        Returns:
-            dict: Return a dict after Parsing the JSON data.
-        """
-        print("new Message")
-        return json.loads(message)
-
-    @abc.abstractmethod
-    def stream_data(self):
-        """Abstract method for how we stream the data.
-        """
-        pass
-
-    def run(self, web_socket: websocket.WebSocketApp):
-        """Start streaming the data"""
-        try:
-            web_socket.run_forever()
-        except Exception as e:
-            self.close(web_socket)
-
-    def close(self, web_socket: websocket.WebSocketApp):
-        """Close the webseocket"""
-        web_socket.close()
+from prod import WriteKafka
 
 
 class AggregateData(AbstractStreamInter):
@@ -91,6 +33,10 @@ class AggregateData(AbstractStreamInter):
             on_message=self.on_message
         )
         super().run(ws)
+
+    def write_data(self, data: dict):
+        # ? Write on a different topic?
+        pass
 
     def __repr__(self) -> str:
         return f"Aggregate data {self.symbol}"
@@ -129,6 +75,10 @@ class RawData(AbstractStreamInter):
         )
         super().run(ws)
 
+    def write_data(self, data: dict):
+        # ? Write on a different topic?
+        pass
+
     def __repr__(self) -> str:
         return f"Raw {self.symbol}"
 
@@ -145,6 +95,7 @@ class KindleData(AbstractStreamInter):
         self.symbol = symbol
         trade = "kline_1m"
         self.conn = super().define_conn(self.symbol, trade)
+        self.producer = WriteKafka()
 
     def on_message(self, _, message):
         json_data = super().on_message(_, message)
@@ -158,7 +109,8 @@ class KindleData(AbstractStreamInter):
             "close": json_data["k"]["c"],
             "closed": json_data["k"]["x"]
         }
-        print(data)
+        print(data)  # ! remember to log the info after we get the data
+        self.write_data(data)
 
     def stream_data(self):
 
@@ -168,6 +120,11 @@ class KindleData(AbstractStreamInter):
             on_message=self.on_message
         )
         super().run(ws)
+
+    def write_data(self, data: dict):
+        symbol = data["symbol"]
+        data.pop(symbol)
+        self.producer.write_data(data, symbol)
 
     def __repr__(self) -> str:
         return f"Kindle Stick {self.symbol}"

@@ -1,7 +1,5 @@
 from defStreams import RawData, AggregateData, KindleData
 import concurrent.futures
-import asyncio
-
 
 exchanges = ["btc", "eth", "ada", "sol", "xpr", "doge", "bnb", "ltc", "shib"]
 usd_symbols = [i+"usdt" for i in exchanges]

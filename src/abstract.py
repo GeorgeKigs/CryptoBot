@@ -2,7 +2,7 @@ import abc
 import websocket
 import json
 
-from src.misc import read_env
+from misc import read_env
 
 
 class AbstractStreamInter(metaclass=abc.ABCMeta):

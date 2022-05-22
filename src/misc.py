@@ -13,7 +13,8 @@ def read_config() -> dict:
     Returns:
         dict: bootstrap
     """
+    env = read_env()
     config = ConfigParser()
-    config.read("cons.ini")
+    config.read(env["CONFIG_FILE"])
     default = dict(config['default'])
     return default['bootstrap.servers']

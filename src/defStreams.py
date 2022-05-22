@@ -1,8 +1,9 @@
 from abstract import AbstractStreamInter
 import websocket
 import json
+from src.misc import read_env
 
-from prod import WriteKafka
+from src.prod import WriteKafka
 
 
 class AggregateData(AbstractStreamInter):
@@ -10,7 +11,9 @@ class AggregateData(AbstractStreamInter):
     Data is streamed in real-time.
     """
 
-    def __init__(self, symbol, trade):
+    def __init__(self, symbol):
+        #! get the trade vakue to the binance websocket
+        trade = ''
         self.conn = super().define_conn(symbol, trade)
 
     def on_message(self, _, message):
@@ -50,9 +53,10 @@ class RawData(AbstractStreamInter):
     Data is sent in real-time.
     """
 
-    def __init__(self, symbol):
+    def ___init__(self, symbol):
         trade = "Trade"
-        self.conn = super().define_conn(symbol, trade)
+        super().__init__(symbol, trade)
+        self.producer = WriteKafka()
 
     def on_message(self, _, message):
         json_data = super().on_message(_, message)
@@ -64,7 +68,7 @@ class RawData(AbstractStreamInter):
             "buyer": json_data["b"],
             "seller": json_data["a"],
         }
-        print(data)
+        self.write_data(data)
 
     def stream_data(self):
 
@@ -76,8 +80,9 @@ class RawData(AbstractStreamInter):
         super().run(ws)
 
     def write_data(self, data: dict):
-        # ? Write on a different topic?
-        pass
+        symbol = data["symbol"]
+        data.pop(symbol)
+        self.producer.write_data(self.env["KAFKA_RAW_TOPIC"], data, symbol)
 
     def __repr__(self) -> str:
         return f"Raw {self.symbol}"
@@ -92,9 +97,8 @@ class KindleData(AbstractStreamInter):
     """
 
     def __init__(self, symbol):
-        self.symbol = symbol
         trade = "kline_1m"
-        self.conn = super().define_conn(self.symbol, trade)
+        super().__init__(symbol, trade)
         self.producer = WriteKafka()
 
     def on_message(self, _, message):
@@ -124,7 +128,7 @@ class KindleData(AbstractStreamInter):
     def write_data(self, data: dict):
         symbol = data["symbol"]
         data.pop(symbol)
-        self.producer.write_data(data, symbol)
+        self.producer.write_data(self.env["KAFKA_KINDLE_TOPIC"], data, symbol)
 
     def __repr__(self) -> str:
         return f"Kindle Stick {self.symbol}"

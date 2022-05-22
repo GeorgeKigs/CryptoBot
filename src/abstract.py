@@ -2,11 +2,18 @@ import abc
 import websocket
 import json
 
+from src.misc import read_env
+
 
 class AbstractStreamInter(metaclass=abc.ABCMeta):
     """Abstract class that defines the data streams of the data.
 
     """
+
+    def __init__(self, symbol, trade) -> None:
+        self.symbol = symbol
+        self.env = read_env()
+        self.conn = self.define_conn(self.symbol, trade)
 
     def define_conn(self, symbol, Trade):
         """Defines the connection.

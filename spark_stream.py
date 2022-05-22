@@ -2,7 +2,7 @@ from pyspark.sql import functions as func
 from pyspark.sql import SparkSession
 import configparser
 
-from misc import read_config, read_env
+from src.misc import read_config, read_env
 
 # create a function for the config parser.
 

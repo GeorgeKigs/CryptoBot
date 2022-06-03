@@ -1,7 +1,7 @@
 from confluent_kafka import Producer
 from configparser import ConfigParser
 
-from src.misc import read_config, read_env
+from misc import read_config, read_env
 
 
 class WriteKafka:
@@ -27,3 +27,7 @@ class WriteKafka:
         )
         self.prod.poll(1000)
         self.prod.flush()
+
+
+class ReadKafka:
+    pass

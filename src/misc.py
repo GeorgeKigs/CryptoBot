@@ -7,7 +7,7 @@ def read_env() -> dict:
     return values
 
 
-def read_config() -> dict:
+def read_config() -> str:
     """Read the Kafka configuration file.
 
     Returns:

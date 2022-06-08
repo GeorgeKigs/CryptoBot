@@ -50,20 +50,19 @@ def sell_ord_trade(client: Client, symbol, quantity, price):
     write_db(order)
 
 
-def choose(order: str):
-    order = order.lower()
-    if order == "sell":
-        return sell_ord_trade
-    else:
-        return buy_ord_data
+# def choose(order: str):
+#     order = order.lower()
+#     if order == "sell":
+#         return sell_ord_trade
+#     else:
+#         return buy_ord_data
 
 
-def trade(symbol: str, order: str, quantity: int, price: int):
+def trade(symbol: str, result, quantity: int, price: int):
     client = init_connection(configs)
 
     try:
         verifiy_data(quantity, price)
-        result = choose(order)
         result(client, symbol, quantity, price)
 
     except TypeError as err:

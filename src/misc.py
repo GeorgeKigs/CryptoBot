@@ -7,7 +7,7 @@ def read_env() -> dict:
     return values
 
 
-def read_config() -> str:
+def read_kafka_config() -> dict:
     """Read the Kafka configuration file.
 
     Returns:
@@ -17,4 +17,4 @@ def read_config() -> str:
     config = ConfigParser()
     config.read(env["CONFIG_FILE"])
     default = dict(config['default'])
-    return default['bootstrap.servers']
+    return default

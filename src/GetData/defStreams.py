@@ -1,9 +1,9 @@
-from abstract import AbstractStreamInter
+from GetData.abstract import AbstractStreamInter
 import websocket
 import json
 from src.misc import read_env
 
-from src.prod import WriteKafka
+from GetData.prod import WriteKafka
 
 
 class AggregateData(AbstractStreamInter):

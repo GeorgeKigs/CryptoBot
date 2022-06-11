@@ -1,4 +1,4 @@
-from src.defStreams import RawData, AggregateData, KindleData
+from GetData.defStreams import RawData, AggregateData, KindleData
 import concurrent.futures
 
 

@@ -1,10 +1,4 @@
 
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka.serialization import StringSerializer, StringDeserializer
-from confluent_kafka.schema_registry.json_schema import JSONSerializer, JSONDeserializer
-
-# from confluent_kafka.error import KafkaError,KafkaException
-# from confluent_kafka import SerializingProducer
 from dataclasses import dataclass
 
 

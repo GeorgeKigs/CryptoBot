@@ -1,4 +1,6 @@
-from GetData.defStreams import RawData, AggregateData, KindleData
+from src.GetData.AggregateData import AggregateData
+from src.GetData.KindleData import KindleData
+from src.GetData.RawData import RawData
 import concurrent.futures
 
 

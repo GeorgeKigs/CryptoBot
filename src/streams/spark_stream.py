@@ -1,12 +1,12 @@
 from pyspark.sql import functions as func
 from pyspark.sql import SparkSession
-import configparser
 
-from misc import read_config, read_env
+
+from misc import read_kafka_config, read_env
 
 # create a function for the config parser.
 
-connection = read_config()
+connection = read_kafka_config()
 configs = read_env()
 # print(connection)
 

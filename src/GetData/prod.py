@@ -14,8 +14,11 @@ class WriteKafka:
     def __init__(self, schema_str, serilization_func) -> None:
 
         self.configs = read_kafka_config()
+
         self.configs["key.serializer"] = StringSerializer('utf-8')
+
         schema_reg = SchemaRegistryClient({"url": None})
+
         self.configs["value.serializer"] = JSONSerializer(
             schema_str, schema_reg, serilization_func)
 

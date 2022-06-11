@@ -38,7 +38,7 @@ class AbstractStreamInter(metaclass=abc.ABCMeta):
         print("Connection Closed")
 
     @abc.abstractmethod
-    def on_message(self, _, message):
+    def on_message(self, _, message) -> dict:
         """Defines what happens when the data is recieved
 
         Args:

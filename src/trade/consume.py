@@ -5,7 +5,7 @@ from confluent_kafka.schema_registry.json_schema import JSONDeserializer
 from confluent_kafka.serialization import StringDeserializer
 
 from misc import read_kafka_config, read_env
-from trade import SetStopLoss, buy_ord_data, sell_ord_trade, stop_loss, trade
+from trade.trade import SetStopLoss, buy_ord_data, sell_ord_trade, stop_loss,trade
 
 
 class ReadKafka(ABC):

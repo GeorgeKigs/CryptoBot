@@ -1,6 +1,6 @@
 from model.tranactions import SaleTransaction
-from trade.consume import ReadKafka
-from trade.trade import trade
+from consume import ReadKafka
+from trade import trade
 from binance.client import Client
 import binance.enums as enums
 

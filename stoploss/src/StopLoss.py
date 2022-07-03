@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from trade.consume import ReadKafka
-from trade.trade import init_connection
+from consume import ReadKafka
+from trade import init_connection
 import binance.enums as enums
 
 

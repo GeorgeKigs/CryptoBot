@@ -1,6 +1,5 @@
-from average.AggregateData import AggregateData
-from src.GetData.KindleData import KindleData
-from raw.RawData import RawData
+
+from RawData import RawData
 import concurrent.futures
 
 
@@ -13,7 +12,7 @@ def def_coins() -> dict:
 
 
 def start_stream(exc):
-    trade = KindleData(exc)
+    trade = RawData(exc)
     trade.stream_data()
 
 

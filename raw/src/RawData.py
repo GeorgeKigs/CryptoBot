@@ -1,8 +1,8 @@
 
 from dataclasses import dataclass
 import websocket
-from raw.abstract import AbstractStreamInter
-from GetData.prod import WriteKafka
+from abstract import AbstractStreamInter
+from prod import WriteKafka
 
 
 @dataclass

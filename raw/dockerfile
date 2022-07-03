@@ -1,6 +1,7 @@
 FROM python:3.10.4-alpine
-WORKDIR /app
-COPY . /app/
-RUN cd /app/
+WORKDIR  /app
+COPY . ./
+RUN apk add librdkafka-dev gcc librdkafka musl-dev linux-headers
+RUN python3 -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 CMD ["python3","app.py"]

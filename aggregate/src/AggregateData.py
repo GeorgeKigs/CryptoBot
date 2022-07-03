@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from abstract import AbstractStreamInter
 import websocket
-from src.misc import read_env
+from misc import read_env
 
-from GetData.prod import WriteKafka
+from prod import WriteKafka
 
 
 @dataclass

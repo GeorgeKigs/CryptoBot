@@ -1,6 +1,6 @@
-from src.GetData.AggregateData import AggregateData
+from average.AggregateData import AggregateData
 from src.GetData.KindleData import KindleData
-from src.GetData.RawData import RawData
+from raw.RawData import RawData
 import concurrent.futures
 
 

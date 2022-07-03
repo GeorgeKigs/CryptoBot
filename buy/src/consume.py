@@ -4,8 +4,7 @@ from confluent_kafka.error import KafkaException
 from confluent_kafka.schema_registry.json_schema import JSONDeserializer
 from confluent_kafka.serialization import StringDeserializer
 
-from misc import read_kafka_config, read_env
-from trade.trade import SetStopLoss, buy_ord_data, sell_ord_trade, stop_loss,trade
+from misc import read_kafka_config
 
 
 class ReadKafka(ABC):
@@ -30,36 +29,6 @@ class ReadKafka(ABC):
     def handle_message(self, message) -> None:
         """Handles the buy and sell based 
         on the message we get."""
-
-
-class Buy_Stream(ReadKafka):
-    def handle_message(self, message: dict):
-        symbol = message["symbol"]
-        quantity = message["quantity"]
-        price = message["price"]
-        trade(symbol, buy_ord_data, quantity, price)
-
-
-class Sell_Stream(ReadKafka):
-    def handle_message(self, message):
-        symbol = message["symbol"]
-        quantity = message["quantity"]
-        price = message["price"]
-        trade(symbol, sell_ord_trade, quantity, price)
-
-
-class StopLoss(ReadKafka):
-    def handle_message(self, message):
-        symbol = message["symbol"]
-        stop_loss_cls = SetStopLoss(
-            stop_loss_price=message["stop_loss_price"],
-            stop_loss_quantity=message["stop_loss_price"],
-            take_profit_price=message["stop_loss_price"],
-            take_profit_quantity=message["stop_loss_price"],
-            symbol=message["stop_loss_price"]
-        )
-
-        stop_loss(symbol, stop_loss_cls)
 
 
 class HandleErrors:

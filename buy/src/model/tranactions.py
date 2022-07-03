@@ -17,25 +17,3 @@ class BuyTransactions(Transactions):
 
 class SaleTransaction(Transactions):
     buyer = mongoengine.IntField()
-
-
-def add_buy(**kwargs):
-    trans = BuyTransactions(
-        symbol=kwargs["s"],
-        time=kwargs["T"],
-        price=kwargs["p"],
-        quantity=kwargs["q"],
-        seller=kwargs["a"]
-    )
-    trans.save()
-
-
-def add_sale(**kwargs):
-    trans = SaleTransaction(
-        symbol=kwargs["s"],
-        time=kwargs["T"],
-        price=kwargs["p"],
-        quantity=kwargs["q"],
-        buyer=kwargs["b"],
-    )
-    trans.save()

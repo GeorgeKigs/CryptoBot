@@ -1,5 +1,9 @@
-from src.AggregateData import AggregateData
+import logging
 import concurrent.futures
+from src.AggregateData import AggregateData
+from src.misc import main_logger
+
+logger = main_logger()
 
 
 def def_coins() -> dict:
@@ -11,6 +15,9 @@ def def_coins() -> dict:
 
 
 def start_stream(exc):
+    # log the data into the logger
+    logger.info(
+        f"{__file__.split('/')[-1]} : Streaming init for: {exc}")
     trade = AggregateData(exc)
     trade.stream_data()
 

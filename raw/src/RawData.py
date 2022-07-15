@@ -1,8 +1,12 @@
 
 from dataclasses import dataclass
 import websocket
-from abstract import AbstractStreamInter
-from prod import WriteKafka
+from src.abstract import AbstractStreamInter
+from src.prod import WriteKafka
+from src.misc import main_logger, read_env
+import json
+
+logger = main_logger()
 
 
 @dataclass
@@ -71,27 +75,34 @@ class RawData(AbstractStreamInter):
 
     def ___init__(self, symbol):
         trade = "trade"
-        super().__init__(symbol, trade)
+        self.conn = super().__init__(symbol, trade)
 
-        schema_str = schema_raw()
-        serilization_func = raw_to_dict
+        self.env = read_env()
+        # schema_str = schema_raw()
+        # serilization_func = raw_to_dict
 
-        self.producer = WriteKafka(schema_str, serilization_func)
+        self.producer = WriteKafka()
+        logger.info(
+            f"{__file__.split('/')[-1]} : {__name__} {symbol} connected to Kafka")
 
     def on_message(self, _, message):
         json_data = super().on_message(_, message)
-        data = Raw_Data(
-            symbol=json_data["s"],
-            time=json_data["T"],
-            price=json_data["p"],
-            quantity=json_data["q"],
-            buyer=json_data["b"],
-            seller=json_data["a"]
-        )
+        data = {
+            "symbol": json_data["s"],
+            "time": json_data["T"],
+            "price": json_data["p"],
+            "quantity": json_data["q"],
+            "buyer": json_data["b"],
+            "seller": json_data["a"]
+        }
+        logger.debug(
+            f"{__file__.split('/')[-1]} : {__name__} streaming data {data}")
 
         self.write_data(data)
 
     def stream_data(self):
+        logger.debug(
+            f"{__file__.split('/')[-1]} : {__name__} streaming has began {self.c}")
 
         ws = websocket.WebSocketApp(
             self.conn, on_open=self.on_open,
@@ -100,10 +111,12 @@ class RawData(AbstractStreamInter):
         )
         super().run(ws)
 
-    def write_data(self, data: Raw_Data):
-        symbol = data["symbol"]
-        data.pop(symbol)
-        self.producer.write_data(self.env["KAFKA_RAW_TOPIC"], data, symbol)
+    def write_data(self, data: dict):
+        topic = self.env["KAFKA_MAIN_TOPIC"]
+        key = data.symbol
+        value = json.dumps(data)
+
+        self.producer.write_data(topic, value, key)
 
     def __repr__(self) -> str:
         return f"Raw {self.symbol}"

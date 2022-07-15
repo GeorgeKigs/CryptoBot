@@ -8,6 +8,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      # KAFKA_LOG4J_LOGGERS: "kafka.controller=TRACE,kafka.request.logger=WARN"
+      # KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      # KAFKA_TOOLS_LOG4J_LOGLEVEL: ERROR
 
   broker:
     image: confluentinc/cp-kafka:7.0.0
@@ -24,24 +27,40 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-    
+     
+  streams:
+    build: 
+      context: ./streams
+    restart: always
+    volumes:
+      - "./streams:/app"
 
-  mongo:
-    image: mongo
-    # restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
 
-  mongo-express:
-    image: mongo-express
+  batch:
+    build: 
+      context: ./batch
     # restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    volumes:
+      - "./batch:/app"
+    container_name: batch_data
+
+  # kindle_app:
+  #   build:
+  #     context: ./kindle
+  #   depends_on:
+  #     - broker
+  #   volumes:
+  #     - ./kindle:/app
+  #   container_name: kindle_cont
+  # mongo:
+  #   image: mongo
+  #   # restart: always
+      # command: mongod --quiet --logpath /dev/null
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: example
+
+
   spark:
     image: docker.io/bitnami/spark:3
     environment:
@@ -52,6 +71,7 @@ services:
       # SPARK_SSL_ENABLED: no
     ports:
       - '8080:8080'
+      - "7077:7077"
 
   spark-worker:
     image: docker.io/bitnami/spark:3
@@ -61,45 +81,46 @@ services:
       SPARK_WORKER_MEMORY: 1G
       SPARK_WORKER_CORES: 1
       # SPARK_RPC_AUTHENTICATION_ENABLED: no
-      SPARK_RPC_ENCRYPTION_ENABLED: no
-      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
-      SPARK_SSL_ENABLED: no
+      # SPARK_RPC_ENCRYPTION_ENABLED: no
+      # SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
+      # SPARK_SSL_ENABLED: no
 
-  buy_app:
-    build:
-      context: ./buy
-    volumes:
-      - ./app:./app
-    container_name: buy
+  # buy_app:
+  #   build:
+  #     context: ./buy
+  #   volumes:
+  #     - ./buy:/app
+  #   container_name: buy
   
-  aggregate_app:
-    build:
-      context: ./aggregate
-    volumes:
-      - ./src:./src
-    container_name: aggregate_cont
+  # aggregate_app:
+  #   build:
+  #     context: ./aggregate
+  #   volumes:
+  #     - ./aggregate./app
+  #   container_name: aggregate_cont
 
-  kindle_app:
-    build:
-      context: ./kindle
-    container_name: kindle_cont
   
-  raw-data_app:
-    build:
-      context: ./raw
-    container_name: raw_cont
-
-  sell_app:
-    build:
-      context: ./sell
-    container_name: sell_cont
-
-  stoploss_app:
-    build:
-      context: ./stoploss
-    container_name: stoploss_cont
   
-  streams:
-    build: 
-      context: ./streams
-    container_name: streaming_data
+  # raw-data_app:
+  #   build:
+  #     context: ./raw
+    # volumes:
+      # - "./raw:/app"
+  #   container_name: raw_cont
+
+  # sell_app:
+  #   build:
+  #     context: ./sell
+  #   volumes:
+    #   - "./sell:/app"
+  #   container_name: sell_cont
+
+  # stoploss_app:
+  #   build:
+  #     context: ./stoploss
+  #   volumes:
+  #     - "./stoploss:./app"
+  #   container_name: stoploss_cont
+  
+
+  

@@ -1,5 +1,5 @@
 
-from RawData import RawData
+from src.RawData import RawData
 import concurrent.futures
 
 

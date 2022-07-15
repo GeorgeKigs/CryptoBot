@@ -1,9 +1,11 @@
+from src.prod import WriteKafka
 from dataclasses import dataclass
-from abstract import AbstractStreamInter
+import json
+from src.abstract import AbstractStreamInter
 import websocket
-from misc import read_env
+from src.misc import read_env, main_logger
 
-from prod import WriteKafka
+logger = main_logger()
 
 
 @dataclass
@@ -83,10 +85,11 @@ class AggregateData(AbstractStreamInter):
 
         schema_str = schema_aggr()
         serilization_func = aggr_to_dict
-
-        self.producer = WriteKafka(schema_str, serilization_func)
-
+        self.env = read_env()
+        self.producer = WriteKafka()
         self.conn = super().define_conn(symbol, trade)
+        logger.info(
+            f"{__file__.split('/')[-1]} : {__name__} {symbol} connected to Kafka")
 
     def on_message(self, _, message):
         json_data = super().on_message(_, message)
@@ -99,19 +102,31 @@ class AggregateData(AbstractStreamInter):
             "l_trade": json_data["l"],
             "trader": json_data["a"]
         }
-        print(data)
+        # print(data)
+        logger.debug(
+            f"{__file__.split('/')[-1]} : {__name__} streaming data {data}")
+
+        self.write_data(data)
 
     def stream_data(self):
+        logger.debug(
+            f"{__file__.split('/')[-1]} : {__name__} streaming has began {self.c}")
         ws = websocket.WebSocketApp(
-            self.conn, on_open=self.on_open,
+            self.conn,
+            on_open=self.on_open,
             on_close=self.on_close,
             on_message=self.on_message
         )
         super().run(ws)
 
     def write_data(self, data: dict):
-        # ? Write on a different topic?
-        pass
+        # ? Write on a different topic? NO
+        """this is used to write data to the Kafka topic"""
+        topic = self.env["KAFKA_MAIN_TOPIC"]
+        key = data.symbol
+        value = json.dumps(data)
+
+        self.producer.write_data(topic, value, key)
 
     def __repr__(self) -> str:
         return f"Aggregate data {self.symbol}"

@@ -16,9 +16,11 @@ producer = Producer(config)
 
 
 def callback(err, msg):
-    pass
+    if err:
+        print(err)
+    print(msg)
 
 
-producer.produce(topic, product, user_id, callback=callback)
+producer.produce("topic", "product", "user_id", callback=callback)
 producer.poll(1000)
 producer.flush()

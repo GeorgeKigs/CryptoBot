@@ -1,4 +1,4 @@
-from KindleData import KindleData
+from src.KindleData import KindleData
 import concurrent.futures
 
 

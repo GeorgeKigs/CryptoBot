@@ -2,7 +2,10 @@ import abc
 import websocket
 import json
 
-from misc import read_env
+from misc import read_env, main_logger
+
+
+logger = main_logger()
 
 
 class AbstractStreamInter(metaclass=abc.ABCMeta):
@@ -25,17 +28,22 @@ class AbstractStreamInter(metaclass=abc.ABCMeta):
         Returns:
             str: The connection String.
         """
+        logger.info(
+            f"{__file__.split('/')[-1]} :  defining web_sock_conn for {symbol}@{Trade}")
+
         return f"wss://stream.binance.com:9443/ws/{symbol}@{Trade}"
 
     def on_open(self, _):
         """Defines what happens if the data stream is opened.
         """
-        print("Session has been opened")
+        logger.info(
+            f"{__file__.split('/')[-1]} :  init web_sock_conn for {self.conn}")
 
     def on_close(self, _, connection_status, msg):
         """Defines what happens if the data is closed.
         """
-        print("Connection Closed")
+        logger.info(
+            f"{__file__.split('/')[-1]} :  close web_sock_conn for {self.conn}")
 
     @abc.abstractmethod
     def on_message(self, _, message) -> dict:
@@ -48,22 +56,23 @@ class AbstractStreamInter(metaclass=abc.ABCMeta):
         Returns:
             dict: Return a dict after Parsing the JSON data.
         """
-        print("new Message")
+
         return json.loads(message)
 
     def on_error(self, _, error):
-        print("Error has occurred")  # ! remember to log the data.
+        """If an error occurs in the websocket streams
+        """
+        logger.error(
+            f"{__file__.split('/')[-1]} :  error {error} for {self.conn}")
 
     @abc.abstractmethod
     def write_data(self, data):
         """Write the data that we stream"""
-        pass
 
     @abc.abstractmethod
     def stream_data(self):
         """Abstract method for how we stream the data.
         """
-        pass
 
     def run(self, web_socket: websocket.WebSocketApp):
         """Start streaming the data"""
@@ -74,4 +83,6 @@ class AbstractStreamInter(metaclass=abc.ABCMeta):
 
     def close(self, web_socket: websocket.WebSocketApp):
         """Close the webseocket"""
+        logger.info(
+            f"{__file__.split('/')[-1]} :  closing web_sock_conn for {self.conn}")
         web_socket.close()

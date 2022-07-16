@@ -47,7 +47,7 @@ def consume_loop(Kafka_Consumer: ReadKafka, topic):
 
     try:
         while running:
-            message = consumer.poll(1.0)
+            message = consumer.poll(5.0)
             if message is None:
                 errors.handle_timeout(topic)
 
@@ -56,6 +56,6 @@ def consume_loop(Kafka_Consumer: ReadKafka, topic):
             else:
                 Kafka_Consumer.handle_message(message)
     except Exception as e:
-        errors.handle_errors(e)
+        errors.handle_errors(e.with_traceback(e.__traceback__))
     finally:
         consumer.close()

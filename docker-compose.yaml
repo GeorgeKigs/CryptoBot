@@ -51,16 +51,11 @@ services:
   btc_app:
     build:
       context: ./btc_consumer
+    restart: always
     volumes:
       - ./btc_consumer:/app
     container_name: btc_consumer
   
-  aggregate_app:
-    build:
-      context: ./aggregate
-    volumes:
-      - ./aggregate./app
-    container_name: aggregate_cont
 
   streams:
     build: 
@@ -79,12 +74,7 @@ services:
       - ./kindle:/app
     container_name: kindle_cont
   
-  raw-data_app:
-    build:
-      context: ./raw
-    volumes:
-      - "./raw:/app"
-    container_name: raw_cont
+  
 
   
 

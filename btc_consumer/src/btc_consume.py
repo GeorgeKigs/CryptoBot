@@ -9,11 +9,11 @@ def write_db(**kwargs):
     logger.debug("Writing the transaction in the db")
     trans = Transactions(
         symbol=kwargs["symbol"],
-        time=kwargs["time"],
-        volume=kwargs["volume"],
-        high=kwargs["high"],
+        time_websocket=float(kwargs["time"]),
+        volume=float(kwargs["volume"]),
+        high=float(kwargs["high"]),
         new_high=kwargs["new_high"],
-        low=kwargs["low"]
+        low=float(kwargs["low"])
     )
     trans.save()
 
@@ -21,12 +21,14 @@ def write_db(**kwargs):
 class BTC_Stream(ReadKafka):
     high = 0
 
-    def handle_message(self, message: str):
-        data = json.loads(message)
-        if data["high"] > high and "price" not in data:
-            high = data["high"]
-            data["new_high"] = high
-            write_db(data)
+    def handle_message(self, message):
+        data = json.loads(message.value())
+        print(data)
+
+        if float(data["high"]) > self.high and "price" not in data:
+            self.high = float(data["high"])
+            data["new_high"] = self.high
+            write_db(**data)
         else:
-            logger.error(f"The price is lower than {high}")
+            logger.info(f"The price is lower than {self.high}")
             pass

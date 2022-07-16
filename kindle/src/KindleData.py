@@ -10,79 +10,6 @@ import json
 logger = main_logger()
 
 
-@dataclass
-class Kindle_Data:
-    time: str
-    symbol: str
-    high: float
-    low: float
-    open: float
-    volume: float
-    close: float
-    closed: str
-
-
-def kindle_to_dict(data, ctx):
-    return dict(
-        time=data["time"],
-        symbol=data["symbol"],
-        high=data["high"],
-        low=data["low"],
-        open=data["open"],
-        volume=data["volume"],
-        close=data["close"],
-        closed=data["closed"],
-    )
-
-
-def schema_kindle():
-    return """
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "User",
-      "description": "A Confluent Kafka Python User",
-      "type": "object",
-      "properties": {
-
-        "time": {
-          "description": "Time the data was created",
-          "type": "string"
-        },
-		"symbol": {
-          "description": "The cryptocurrency symbol",
-          "type": "string"
-        },
-        "high": {
-          "description": "Highest sale during the duration",
-          "type": "float"
-        },
-		"low": {
-          "description": "Lowest sale during the duration",
-          "type": "float"
-        },
-		"open": {
-          "description": "The amount the kindle data opened with",
-          "type": "float"
-        },
-		"close": {
-          "description": "The amount the kindle data closed with",
-          "type": "float"
-        },
-		"volume": {
-          "description": "The amount traded",
-          "type": "float"
-        },
-		"closed": {
-          "description": "Check the time",
-          "type": "string"
-        },
-        
-      },
-      "required": [ "time","symbol","high","low","open","volume","close","closed" ]
-    }
-    """
-
-
 class KindleData(AbstractStreamInter):
     """Stream the Kindle data.
     Refreshes after 2000ms.
@@ -92,10 +19,6 @@ class KindleData(AbstractStreamInter):
         trade = "kline_1m"
 
         super().__init__(symbol, trade)
-
-        schema_str = schema_kindle()
-        serilization_func = kindle_to_dict
-
         self.producer = WriteKafka()
 
     def on_message(self, _, message):
@@ -116,7 +39,7 @@ class KindleData(AbstractStreamInter):
 
     def stream_data(self):
         logger.debug(
-            f"{__file__.split('/')[-1]} : {__name__} streaming has began {self.c}")
+            f"{__file__.split('/')[-1]} : {__name__} streaming has began {self.conn}")
         ws = websocket.WebSocketApp(
             self.conn,
             on_open=self.on_open,
@@ -125,7 +48,7 @@ class KindleData(AbstractStreamInter):
         )
         super().run(ws)
 
-    def write_data(self, data: Kindle_Data):
+    def write_data(self, data: dict):
         logger.debug(
             f"{__file__.split('/')[-1]} : {__name__} data has {data}")
         symbol = data["symbol"]

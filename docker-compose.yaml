@@ -35,23 +35,15 @@ services:
     volumes:
       - "./streams:/app"
 
-
-  batch:
-    build: 
-      context: ./batch
-    # restart: always
+  kindle_app:
+    build:
+      context: ./kindle
+    restart: always
+    depends_on:
+      - broker
     volumes:
-      - "./batch:/app"
-    container_name: batch_data
-
-  # kindle_app:
-  #   build:
-  #     context: ./kindle
-  #   depends_on:
-  #     - broker
-  #   volumes:
-  #     - ./kindle:/app
-  #   container_name: kindle_cont
+      - ./kindle:/app
+    container_name: kindle_cont
   # mongo:
   #   image: mongo
   #   # restart: always

@@ -5,15 +5,10 @@ import datetime
 class Transactions(mongoengine.Document):
     symbol = mongoengine.StringField()
     time = mongoengine.DateTimeField(default=datetime.datetime.now())
-    price = mongoengine.FloatField()
-    quantity = mongoengine.FloatField()
+    volume = mongoengine.FloatField()
+    high = mongoengine.FloatField()
+    low = mongoengine.FloatField()
+    new_high = mongoengine.BooleanField()
+    time_websocket = mongoengine.FloatField()
 
     meta = {'allow_inheritance': True}
-
-
-class BuyTransactions(Transactions):
-    seller = mongoengine.IntField()
-
-
-class SaleTransaction(Transactions):
-    buyer = mongoengine.IntField()

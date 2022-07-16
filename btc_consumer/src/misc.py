@@ -3,11 +3,6 @@ from dotenv import dotenv_values
 import logging
 
 
-def read_env() -> dict:
-    values = dotenv_values()
-    return values
-
-
 def set_logger_level(config):
     level = {
         "WARNING": logging.WARNING,
@@ -49,7 +44,13 @@ def main_logger():
     logger.addHandler(console)
     logger.addHandler(file)
 
+    logger.warning("Logging has started")
     return logger
+
+
+def read_env() -> dict:
+    values = dotenv_values()
+    return values
 
 
 def read_kafka_config() -> dict:

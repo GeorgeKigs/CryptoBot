@@ -10,7 +10,7 @@ consumer = Consumer(default)
 
 
 # Subscribe to topic
-topic = "all_data"
+topic = "bitcoin_topic"
 consumer.subscribe([topic])
 
 # Poll for new messages from Kafka and print them.

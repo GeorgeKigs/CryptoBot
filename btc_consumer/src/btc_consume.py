@@ -1,4 +1,4 @@
-from model.tranactions import Transactions
+from src.model.tranactions import Transactions
 from src.main_class import ReadKafka, main_logger
 import json
 

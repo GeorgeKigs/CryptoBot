@@ -6,7 +6,7 @@ from src.misc import main_logger
 def main():
     logger.info("Initalizing the BTC Consumer")
     stream = BTC_Stream()
-    consume_loop(stream)
+    consume_loop(stream, 'bitcoin_topic')
 
 
 if __name__ == "__main__":

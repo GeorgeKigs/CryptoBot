@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from confluent_kafka import Consumer
 from src.misc import main_logger, read_kafka_config
-
+from configparser import ConfigParser
 logger = main_logger()
 
 
@@ -9,9 +9,12 @@ class ReadKafka(ABC):
     def __init__(self, group_id="") -> None:
         logger.info("establishing Kafka connection")
 
-        self.configs = read_kafka_config()
-        default = dict(self.config['default'])
-        default.update(self.config["consumer"])
+        self.configs = ConfigParser()
+
+        self.configs.read('cons.ini')
+        default = dict(self.configs['default'])
+        default.update(self.configs["consumer"])
+        print(self.configs)
         self.consumer = Consumer(default)
         self.running = True
 

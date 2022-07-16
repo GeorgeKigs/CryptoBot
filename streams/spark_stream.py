@@ -41,13 +41,7 @@ btc_streams = btc_vals.writeStream\
     .option("checkpointLocation", "/tmp/pyspark/")\
     .option("forceDeleteTempCheckpointLocation", "true")\
     .start()
-eth_streams = eth_vals.writeStream\
-    .format("kafka")\
-    .option("kafka.bootstrap.servers", f"{host}:{port}")\
-    .option("topic", f"{configs['ETH_TOPIC']}")\
-    .option("checkpointLocation", "/tmp/pyspark/")\
-    .option("forceDeleteTempCheckpointLocation", "true")\
-    .start()
+
 # .trigger(continuous="10 seconds")\
 # .outputMode("complete")
 spark.streams.awaitAnyTermination()

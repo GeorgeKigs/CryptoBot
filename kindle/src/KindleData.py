@@ -1,6 +1,3 @@
-
-from asyncio.log import logger
-from dataclasses import dataclass
 import websocket
 from src.prod import WriteKafka
 from src.misc import main_logger, read_env

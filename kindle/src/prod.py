@@ -1,6 +1,9 @@
 # from confluent_kafka import Producer
 from confluent_kafka import Producer
 from src.misc import read_kafka_config, read_env
+from misc import main_logger
+
+logger = main_logger()
 
 
 class WriteKafka:
@@ -14,9 +17,10 @@ class WriteKafka:
 
     def callback(self, err, msg):
         if err:
-            print(err)
+            logger.error(
+                f"{__file__.split('/')[-1]} : {__name__} . Error due to {err}")
         else:
-            print(msg)
+            logger.debug(f"{msg} logged the following message")
 
     def write_data(self, topic, value, key):
         self.prod.produce(

@@ -48,14 +48,6 @@ services:
       SPARK_WORKER_MEMORY: 1G
       SPARK_WORKER_CORES: 1
 
-  btc_app:
-    build:
-      context: ./btc_consumer
-    restart: always
-    volumes:
-      - ./btc_consumer:/app
-    container_name: btc_consumer
-  
 
   streams:
     build: 

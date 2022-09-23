@@ -14,7 +14,7 @@ def set_logger_level(config):
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
         "ERROR": logging.ERROR,
-        "CRIRICAL": logging.CRITICAL
+        "CRITICAL": logging.CRITICAL
     }
     return level[config]
 
@@ -28,33 +28,36 @@ def main_logger():
     '''
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
+
     # create the handlers of the application
-    console = logging.StreamHandler()
-    file = logging.FileHandler(configs["LOGGER_FILE"])
+
+    consoleHandler = logging.StreamHandler()
+    fileHandler = logging.FileHandler(configs["LOGGER_FILE"])
 
     # set the levels of the application
     stream_level = set_logger_level(configs["LOGGER_STREAM_LEVEL"])
     file_level = set_logger_level(configs["LOGGER_FILE_LEVEL"])
 
-    console.setLevel(stream_level)
-    file.setLevel(file_level)
+    consoleHandler.setLevel(stream_level)
+    fileHandler.setLevel(file_level)
 
     # set the formats of the applications
     console_form = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
     file_form = logging.Formatter(
         '%(asctime)s : %(name)s - %(levelname)s - %(message)s')
 
-    console.setFormatter(console_form)
-    file.setFormatter(file_form)
-    logger.addHandler(console)
-    logger.addHandler(file)
+    consoleHandler.setFormatter(console_form)
+    fileHandler.setFormatter(file_form)
+
+    logger.addHandler(consoleHandler)
+    logger.addHandler(fileHandler)
 
     return logger
 
 
 def read_kafka_config() -> dict:
-    """Read the Kafka configuration file.
-
+    """
+    Read the Kafka configuration file.
     Returns:
         dict: bootstrap
     """

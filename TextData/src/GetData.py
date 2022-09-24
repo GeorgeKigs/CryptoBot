@@ -5,8 +5,8 @@ import sys
 import requests
 import json
 
-from tweets.src.misc import read_env
-from tweets.src.misc import main_logger
+from src.misc import read_env, main_logger
+
 
 logger = main_logger()
 
@@ -14,9 +14,6 @@ logger = main_logger()
 class GetTelegram:
     """Getting data from the telegram API
     """
-
-    def __init__(self) -> None:
-        self.client
 
     def auth(self) -> None:
         """Authenticating to the telegram API
@@ -54,21 +51,25 @@ class GetSubreddits:
         env = read_env()
         client_id = env["REDDIT_KEY"]
         client_secret = env["REDDIT_SECRET"]
+
         auth = requests.auth.HTTPBasicAuth(client_id, client_secret)
-        data = {'grant_type': 'password',
-                'username': env["REDDIT_USER"],
-                'password': env["REDDIT_PASS"]}
+
+        auth_data = {'grant_type': 'password',
+                     'username': env["REDDIT_USER"],
+                     'password': env["REDDIT_PASS"]}
+
         headers = {'User-Agent': 'Streams/0.0.1'}
+
         res = requests.post('https://www.reddit.com/api/v1/access_token',
-                            auth=auth, data=data, headers=headers)
+                            auth=auth, data=auth_data, headers=headers)
         token = res.json()['access_token']
         return token
 
-    def get_subreddit(self, subreddit: str) -> list:
-        token = self.authenticate()
+    def get_subreddit(self, subreddit: str, token: str) -> list:
+        # token = self.authenticate()
         headers = {**{'Authorization': f"bearer {token}"},
                    **{'User-Agent': 'Streams/0.0.1'}}
-        params = {'limit': 100}
+        params = {'limit': 5}
         res = requests.get(f"https://oauth.reddit.com/r/{subreddit}/new",
                            headers=headers, params=params)
         data = res.json()["data"]["children"]
@@ -90,6 +91,7 @@ class GetTweets:
     def get_user_tweets(self, username):
         self.config.Username = username
         self.config.Output = f'./data/users.json'
+        self.config.Limit = 5
         twint.run.Search(self.config)
         return self.config.Store_object_tweets_list
 

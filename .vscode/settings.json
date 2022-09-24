@@ -2,5 +2,8 @@
 	"python.analysis.extraPaths": [
 		"./src",
 		"./kindle/src"
-	]
+	],
+	"yaml.schemas": {
+		"https://json.schemastore.org/github-action.json": "file:///home/george/Desktop/CR_streams/.github/workflow/deploy.yml"
+	}
 }

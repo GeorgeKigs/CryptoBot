@@ -11,11 +11,38 @@ from src.misc import read_env, main_logger
 logger = main_logger()
 
 
+class GetStockExchange:
+    """Get stock exchange data from different sources to analyse with the crypto 
+    data.
+    """
+    # def __init__(self, configs: dict = None, config_file: str = None) -> None:
+    #     if (not config_file and not configs):
+    #         raise AttributeError("Add configs")
+    #     if configs and "api_key" not in configs.keys():
+    #         raise AttributeError("Add configs")
+    #     if config_file:
+    #         configs = self.__read_configs(config_file)
+
+    #     self.api_key = configs["api_key"]
+
+    # def __read_configs(self, file) -> dict:
+    #     configs = read_env(file)
+    #     return {'api_key': configs["API_KEY"]}
+
+    # def get_stock_exchange(self, stock_exchange: str) -> dict:
+    #     url = f"https://financialmodelingprep.com/api/v3/stock/list?apikey={self.api_key}"
+    #     response = requests.get(url)
+    #     if response.status_code == 200:
+    #         return response.json()
+    #     else:
+    #         return {}
+
+
 class GetTelegram:
     """Getting data from the telegram API
     """
 
-    def auth(self) -> None:
+    def authenticate(self) -> None:
         """Authenticating to the telegram API
         """
         api_id = read_env("TELEGRAM_API_ID")
@@ -87,6 +114,9 @@ class GetTweets:
         self.config.Since = self.from_time
         self.config.Until = self.to_time
         self.config.Store_json = True
+
+    # def authenticate(self):
+    #     return
 
     def get_user_tweets(self, username):
         self.config.Username = username
